@@ -4,19 +4,33 @@
   <meta charset="UTF-8" />
   <title>Daily 3 Wins</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <h1>Daily 3 Wins</h1>
-  <form id="wins-form">
-    <input placeholder="🏋️ Physical win" id="physical" required />
-    <input placeholder="🧠 Mental win" id="mental" required />
-    <input placeholder="🕊️ Spiritual win" id="spiritual" required />
-    <button type="submit">Save Wins</button>
-  </form>
-
-  <h2>Past Entries</h2>
-  <ul id="past-entries"></ul>
-
+  <div class="app-container">
+    <select id="theme-selector" style="position:absolute;top:1rem;right:1rem;padding:0.5rem;border-radius:8px;border:1px solid #ccc;background:inherit;color:inherit;">
+      <option value="light">☀️ Light</option>
+      <option value="dark">🌙 Dark</option>
+      <option value="sepia">📜 Sepia</option>
+      <option value="blue">🌊 Blue</option>
+    </select>
+    <h1>Daily 3 Wins</h1>
+    <div class="input-group">
+      <form id="wins-form">
+        <input placeholder="Physical win" id="physical" required />
+        <input placeholder="Mental win" id="mental" required />
+        <input placeholder="Spiritual win" id="spiritual" required />
+        <button type="submit" id="save-wins-btn">Save Wins</button>
+      </form>
+    </div>
+    <div class="entries-header">
+      <h2>Past Entries</h2>
+      <button id="delete-selected" class="trash-icon" title="Delete Selected">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+    <ul id="past-entries"></ul>
+  </div>
   <script src="main.js"></script>
 </body>
 </html>
