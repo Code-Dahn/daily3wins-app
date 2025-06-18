@@ -419,64 +419,93 @@ body[data-theme="dark"] .entry-detail-item {
   flex-direction: column;
   gap: 1em;
   margin-bottom: 2em;
-  width: 100%;
 }
 
-#wins-form input {
+.input-group input {
   padding: 0.75em;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 0.5em;
   font-size: 1em;
-  width: 100%;
-  box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
-#wins-form input:focus {
+.input-group input:focus {
   outline: none;
-  border-color: #4a5568;
-  box-shadow: 0 0 0 2px rgba(74, 85, 104, 0.1);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
-#save-wins-btn {
-  width: 100%;
-  margin-top: 1em;
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
+.input-group button {
   padding: 0.75em;
-  font-size: 1.1em;
-  font-weight: 600;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.5em;
+  font-size: 1em;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
 }
 
-body[data-theme="dark"] input,
-body[data-theme="dark"] button,
-body[data-theme="dark"] #save-wins-btn {
-  background: #23232a;
-  color: #f4f4f5;
-  border: 1px solid #444;
+.input-group button:hover {
+  background: #2563eb;
 }
 
-body[data-theme="sepia"] input,
-body[data-theme="sepia"] button,
-body[data-theme="sepia"] #save-wins-btn {
-  background: #faf0dc;
+/* Theme-specific styles */
+body[data-theme="dark"] .input-group input {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+body[data-theme="dark"] .input-group input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.1);
+}
+
+body[data-theme="dark"] .input-group button {
+  background: #3b82f6;
+}
+
+body[data-theme="dark"] .input-group button:hover {
+  background: #60a5fa;
+}
+
+body[data-theme="sepia"] .input-group input {
+  background: #f5e6d3;
+  border-color: #e6d5c3;
   color: #5b4636;
-  border: 1px solid #d4c4a8;
 }
 
-body[data-theme="blue"] input,
-body[data-theme="blue"] button,
-body[data-theme="blue"] #save-wins-btn {
+body[data-theme="sepia"] .input-group input:focus {
+  border-color: #8b5a2b;
+  box-shadow: 0 0 0 2px rgba(139, 90, 43, 0.1);
+}
+
+body[data-theme="sepia"] .input-group button {
+  background: #8b5a2b;
+}
+
+body[data-theme="sepia"] .input-group button:hover {
+  background: #a49269;
+}
+
+body[data-theme="blue"] .input-group input {
   background: #ffffff;
-  color: #1a365d;
-  border: 1px solid #90cdf4;
+  border-color: #bfdbfe;
+  color: #1e3a8a;
 }
 
-#wins-form input {
-  margin-bottom: 0.75em;
+body[data-theme="blue"] .input-group input:focus {
+  border-color: #1e40af;
+  box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.1);
+}
+
+body[data-theme="blue"] .input-group button {
+  background: #1e40af;
+}
+
+body[data-theme="blue"] .input-group button:hover {
+  background: #2563eb;
 }
 
 .entry-count {
@@ -616,4 +645,451 @@ body[data-theme="blue"] .save-icon {
 body[data-theme="blue"] .save-icon:hover {
   background: rgba(44, 82, 130, 0.1);
   color: #1a365d;
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+  margin-bottom: 2em;
+  padding: 1.5em;
+  background: #f8fafc;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.streak-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75em;
+  font-size: 1.5em;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.streak-counter i {
+  color: #f97316;
+  font-size: 1.2em;
+}
+
+.streak-label {
+  font-size: 0.8em;
+  color: #64748b;
+}
+
+.contribution-graph {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.5em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.calendar-container {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75em;
+}
+
+.calendar-header h3 {
+  font-size: 1em;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.calendar-nav {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.4em;
+  border-radius: 0.5em;
+  transition: all 0.2s ease;
+  font-size: 0.9em;
+}
+
+.calendar-nav:hover {
+  background: #f1f5f9;
+  color: #1e40af;
+}
+
+.calendar-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 0.75em;
+  color: #64748b;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.calendar-dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25em;
+}
+
+.calendar-date {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  color: #1e293b;
+  border-radius: 0.4em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  min-height: 32px;
+  position: relative;
+}
+
+.calendar-date:hover {
+  background: #f1f5f9;
+  transform: scale(1.1);
+}
+
+.calendar-date.today {
+  background: #1e40af;
+  color: white;
+  font-weight: 600;
+}
+
+.calendar-date.has-entry {
+  background: #f0f9ff;
+  color: #0369a1;
+  font-weight: 500;
+}
+
+.calendar-date.has-entry[data-level="1"] { background: #e0f2fe; }
+.calendar-date.has-entry[data-level="2"] { background: #bae6fd; }
+.calendar-date.has-entry[data-level="3"] { background: #7dd3fc; }
+.calendar-date.has-entry[data-level="4"] { background: #38bdf8; }
+
+.calendar-date.other-month {
+  color: #cbd5e1;
+  opacity: 0.5;
+}
+
+/* Theme-specific styles */
+body[data-theme="dark"] .stats-container {
+  background: #1e293b;
+}
+
+body[data-theme="dark"] .calendar-container {
+  background: #0f172a;
+}
+
+body[data-theme="dark"] .calendar-header h3 {
+  color: #e2e8f0;
+}
+
+body[data-theme="dark"] .calendar-date {
+  color: #e2e8f0;
+}
+
+body[data-theme="dark"] .calendar-date:hover {
+  background: #334155;
+}
+
+body[data-theme="dark"] .calendar-date.today {
+  background: #3b82f6;
+}
+
+body[data-theme="dark"] .calendar-date.has-entry[data-level="1"] { background: #0c4a6e; }
+body[data-theme="dark"] .calendar-date.has-entry[data-level="2"] { background: #0369a1; }
+body[data-theme="dark"] .calendar-date.has-entry[data-level="3"] { background: #0284c7; }
+body[data-theme="dark"] .calendar-date.has-entry[data-level="4"] { background: #0ea5e9; }
+
+body[data-theme="dark"] .calendar-date.other-month {
+  color: #475569;
+}
+
+body[data-theme="sepia"] .stats-container {
+  background: #faf0dc;
+}
+
+body[data-theme="sepia"] .calendar-container {
+  background: #f5e6d3;
+}
+
+body[data-theme="sepia"] .calendar-header h3 {
+  color: #5b4636;
+}
+
+body[data-theme="sepia"] .calendar-date {
+  color: #5b4636;
+}
+
+body[data-theme="sepia"] .calendar-date:hover {
+  background: #e6d5c3;
+}
+
+body[data-theme="sepia"] .calendar-date.today {
+  background: #8b5a2b;
+  color: #faf0dc;
+}
+
+body[data-theme="sepia"] .calendar-date.has-entry[data-level="1"] { background: #d4c4a8; }
+body[data-theme="sepia"] .calendar-date.has-entry[data-level="2"] { background: #c4b393; }
+body[data-theme="sepia"] .calendar-date.has-entry[data-level="3"] { background: #b4a27e; }
+body[data-theme="sepia"] .calendar-date.has-entry[data-level="4"] { background: #a49269; }
+
+body[data-theme="sepia"] .calendar-date.other-month {
+  color: #a89984;
+}
+
+body[data-theme="blue"] .stats-container {
+  background: #f0f9ff;
+}
+
+body[data-theme="blue"] .calendar-container {
+  background: #ffffff;
+}
+
+body[data-theme="blue"] .calendar-header h3 {
+  color: #1e40af;
+}
+
+body[data-theme="blue"] .calendar-date {
+  color: #1e3a8a;
+}
+
+body[data-theme="blue"] .calendar-date:hover {
+  background: #dbeafe;
+}
+
+body[data-theme="blue"] .calendar-date.today {
+  background: #1e40af;
+  color: #ffffff;
+}
+
+body[data-theme="blue"] .calendar-date.has-entry[data-level="1"] { background: #dbeafe; }
+body[data-theme="blue"] .calendar-date.has-entry[data-level="2"] { background: #bfdbfe; }
+body[data-theme="blue"] .calendar-date.has-entry[data-level="3"] { background: #93c5fd; }
+body[data-theme="blue"] .calendar-date.has-entry[data-level="4"] { background: #60a5fa; }
+
+body[data-theme="blue"] .calendar-date.other-month {
+  color: #93c5fd;
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  .stats-container {
+    padding: 1em;
+  }
+
+  .calendar-container {
+    padding: 0.75em;
+    max-width: 280px;
+  }
+
+  .calendar-date {
+    min-width: 28px;
+    min-height: 28px;
+    font-size: 0.75em;
+  }
+
+  .calendar-days {
+    font-size: 0.7em;
+  }
+
+  .calendar-header h3 {
+    font-size: 0.9em;
+  }
+}
+
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.graph-header h3 {
+  font-size: 1em;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.graph-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.75em;
+  color: #64748b;
+}
+
+.legend-squares {
+  display: flex;
+  gap: 2px;
+}
+
+.legend-square {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.legend-square:nth-child(1) { background: #ebedf0; }
+.legend-square:nth-child(2) { background: #9be9a8; }
+.legend-square:nth-child(3) { background: #40c463; }
+.legend-square:nth-child(4) { background: #30a14e; }
+
+.graph-container {
+  display: flex;
+  gap: 0.5em;
+}
+
+.graph-months {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  font-size: 0.7em;
+  color: #64748b;
+  padding-top: 1.5em;
+}
+
+.graph-grid {
+  display: grid;
+  grid-template-columns: repeat(53, 1fr);
+  gap: 2px;
+  padding: 0.5em;
+}
+
+.contribution-square {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: #ebedf0;
+  transition: transform 0.2s ease;
+}
+
+.contribution-square:hover {
+  transform: scale(1.5);
+  z-index: 1;
+}
+
+.contribution-square[data-level="1"] { background: #9be9a8; }
+.contribution-square[data-level="2"] { background: #40c463; }
+.contribution-square[data-level="3"] { background: #30a14e; }
+.contribution-square[data-level="4"] { background: #216e39; }
+
+/* Theme-specific styles */
+body[data-theme="dark"] .contribution-graph {
+  background: #0f172a;
+}
+
+body[data-theme="dark"] .graph-header h3 {
+  color: #e2e8f0;
+}
+
+body[data-theme="dark"] .graph-legend {
+  color: #94a3b8;
+}
+
+body[data-theme="dark"] .graph-months {
+  color: #94a3b8;
+}
+
+body[data-theme="dark"] .contribution-square {
+  background: #1e293b;
+}
+
+body[data-theme="dark"] .contribution-square[data-level="1"] { background: #0ea5e9; }
+body[data-theme="dark"] .contribution-square[data-level="2"] { background: #0284c7; }
+body[data-theme="dark"] .contribution-square[data-level="3"] { background: #0369a1; }
+body[data-theme="dark"] .contribution-square[data-level="4"] { background: #075985; }
+
+body[data-theme="sepia"] .contribution-graph {
+  background: #f5e6d3;
+}
+
+body[data-theme="sepia"] .graph-header h3 {
+  color: #5b4636;
+}
+
+body[data-theme="sepia"] .graph-legend {
+  color: #7c6a5a;
+}
+
+body[data-theme="sepia"] .graph-months {
+  color: #7c6a5a;
+}
+
+body[data-theme="sepia"] .contribution-square {
+  background: #e6d5c3;
+}
+
+body[data-theme="sepia"] .contribution-square[data-level="1"] { background: #d4c4a8; }
+body[data-theme="sepia"] .contribution-square[data-level="2"] { background: #c4b393; }
+body[data-theme="sepia"] .contribution-square[data-level="3"] { background: #b4a27e; }
+body[data-theme="sepia"] .contribution-square[data-level="4"] { background: #a49269; }
+
+body[data-theme="blue"] .contribution-graph {
+  background: #ffffff;
+}
+
+body[data-theme="blue"] .graph-header h3 {
+  color: #1e40af;
+}
+
+body[data-theme="blue"] .graph-legend {
+  color: #3b82f6;
+}
+
+body[data-theme="blue"] .graph-months {
+  color: #3b82f6;
+}
+
+body[data-theme="blue"] .contribution-square {
+  background: #dbeafe;
+}
+
+body[data-theme="blue"] .contribution-square[data-level="1"] { background: #93c5fd; }
+body[data-theme="blue"] .contribution-square[data-level="2"] { background: #60a5fa; }
+body[data-theme="blue"] .contribution-square[data-level="3"] { background: #3b82f6; }
+body[data-theme="blue"] .contribution-square[data-level="4"] { background: #2563eb; }
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  .contribution-graph {
+    padding: 1em;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .graph-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5em;
+  }
+
+  .graph-grid {
+    grid-template-columns: repeat(53, 8px);
+  }
+
+  .contribution-square {
+    width: 8px;
+    height: 8px;
+  }
 }
