@@ -16,18 +16,26 @@ themeSelector.addEventListener('change', () => {
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
+  const date = new Date().toISOString().split('T')[0];
+  const physicalWin = document.getElementById('physical').value;
+  const mentalWin = document.getElementById('mental').value;
+  const spiritualWin = document.getElementById('spiritual').value;
+
   const wins = {
-    date: new Date().toLocaleDateString(),
-    physical: form.physical.value,
-    mental: form.mental.value,
-    spiritual: form.spiritual.value,
+    date,
+    physical: physicalWin,
+    mental: mentalWin,
+    spiritual: spiritualWin
   };
 
-  const saved = JSON.parse(localStorage.getItem('wins') || '[]');
-  saved.unshift(wins);
-  localStorage.setItem('wins', JSON.stringify(saved));
-  form.reset();
+  let savedWins = JSON.parse(localStorage.getItem('wins') || '[]');
+  savedWins.push(wins);
+  localStorage.setItem('wins', JSON.stringify(savedWins));
+
+  document.getElementById('wins-form').reset();
   renderWins();
+  updateCalendar();
+  updateStreakCounter();
 });
 
 function renderWins() {
@@ -225,11 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const physicalWin = document.getElementById('physical').value;
         const mentalWin = document.getElementById('mental').value;
         const spiritualWin = document.getElementById('spiritual').value;
-
-        if (!physicalWin || !mentalWin || !spiritualWin) {
-            alert('Please fill in all three wins!');
-            return;
-        }
 
         const wins = {
             date,
