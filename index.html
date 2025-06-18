@@ -1,299 +1,1096 @@
-const form = document.getElementById('wins-form');
-const list = document.getElementById('past-entries');
-const themeSelector = document.getElementById('theme-selector');
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-const savedTheme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
 
-// Set initial theme
-document.body.setAttribute('data-theme', savedTheme);
-themeSelector.value = savedTheme;
-
-themeSelector.addEventListener('change', () => {
-  const selectedTheme = themeSelector.value;
-  document.body.setAttribute('data-theme', selectedTheme);
-  localStorage.setItem('theme', selectedTheme);
-});
-
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const date = new Date().toISOString().split('T')[0];
-  const physicalWin = document.getElementById('physical').value;
-  const mentalWin = document.getElementById('mental').value;
-  const spiritualWin = document.getElementById('spiritual').value;
-
-  const wins = {
-    date,
-    physical: physicalWin,
-    mental: mentalWin,
-    spiritual: spiritualWin
-  };
-
-  let savedWins = JSON.parse(localStorage.getItem('wins') || '[]');
-  savedWins.push(wins);
-  localStorage.setItem('wins', JSON.stringify(savedWins));
-
-  document.getElementById('wins-form').reset();
-  renderWins();
-  updateCalendar();
-  updateStreakCounter();
-});
-
-function renderWins() {
-  const saved = JSON.parse(localStorage.getItem('wins') || '[]');
-  
-  // Create entry rows
-  const entries = saved
-    .map((win, idx) => `
-      <div class="entry-card" onclick="toggleEntry(this)">
-        <div class="entry-checkbox" onclick="event.stopPropagation()">
-          <input type="checkbox" data-idx="${idx}">
-        </div>
-        <div class="entry-date">${win.date}</div>
-        <div class="entry-preview">
-          <span class="entry-preview-text">🏋️ ${win.physical}</span>
-          <i class="fas fa-chevron-down expand-icon"></i>
-        </div>
-        <div class="entry-details">
-          <div class="entry-detail-item">
-            <span class="entry-label">Physical Win:</span>
-            <div class="entry-content">
-              <span class="entry-value">🏋️ ${win.physical}</span>
-            </div>
-          </div>
-          <div class="entry-detail-item">
-            <span class="entry-label">Mental Win:</span>
-            <div class="entry-content">
-              <span class="entry-value">🧠 ${win.mental}</span>
-            </div>
-          </div>
-          <div class="entry-detail-item">
-            <span class="entry-label">Spiritual Win:</span>
-            <div class="entry-content">
-              <span class="entry-value">🕊️ ${win.spiritual}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    `)
-    .join('');
-    
-  list.innerHTML = entries;
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
-// Update toggle function for expanding/collapsing entries
-function toggleEntry(card) {
-  const details = card.querySelector('.entry-details');
-  const icon = card.querySelector('.expand-icon');
-  
-  if (details.style.display === 'block') {
-    details.style.display = 'none';
-    icon.classList.remove('fa-chevron-up');
-    icon.classList.add('fa-chevron-down');
-  } else {
-    details.style.display = 'block';
-    icon.classList.remove('fa-chevron-down');
-    icon.classList.add('fa-chevron-up');
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f2f2f7;
+  color: #222;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Light theme (default) */
+body[data-theme="light"] {
+  background: #f2f2f7;
+  color: #1f2937;
+}
+
+body[data-theme="light"] .entry-card {
+  background: #ffffff;
+  color: #1f2937;
+}
+
+body[data-theme="light"] .entry-date {
+  color: #2563eb;
+}
+
+body[data-theme="light"] .entry-count {
+  color: #4b5563;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Dark theme */
+body[data-theme="dark"] {
+  background: #18181b;
+  color: #f4f4f5;
+}
+
+body[data-theme="dark"] .entry-card {
+  background: #23232a;
+  color: #f4f4f5;
+}
+
+body[data-theme="dark"] .entry-date {
+  color: #60a5fa;
+}
+
+body[data-theme="dark"] .entry-count {
+  color: #d1d5db;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] .entry-label {
+  color: #9ca3af;
+}
+
+/* Sepia theme */
+body[data-theme="sepia"] {
+  background: #f4ecd8;
+  color: #433422;
+}
+
+body[data-theme="sepia"] .entry-card {
+  background: #faf0dc;
+  color: #433422;
+}
+
+body[data-theme="sepia"] .entry-date {
+  color: #9f7aea;
+}
+
+body[data-theme="sepia"] .entry-count {
+  color: #6b7280;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+body[data-theme="sepia"] .entry-label {
+  color: #6b7280;
+}
+
+/* Blue theme */
+body[data-theme="blue"] {
+  background: #e6f3ff;
+  color: #1a365d;
+}
+
+body[data-theme="blue"] .entry-card {
+  background: #ffffff;
+  color: #1a365d;
+}
+
+body[data-theme="blue"] .entry-date {
+  color: #3182ce;
+}
+
+body[data-theme="blue"] .entry-count {
+  color: #4a5568;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+body[data-theme="blue"] .entry-label {
+  color: #4a5568;
+}
+
+.container {
+  max-width: 800px;
+  margin: 2em auto;
+  padding: 2em;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 90%;
+}
+
+body[data-theme="dark"] .container {
+  background: #23232a;
+  color: #f4f4f5;
+}
+
+body[data-theme="sepia"] .container {
+  background: #faf0dc;
+  color: #5b4636;
+}
+
+body[data-theme="blue"] .container {
+  background: #ffffff;
+  color: #1a365d;
+}
+
+input, button {
+  background: inherit;
+  color: inherit;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 1em;
+  margin: 0.75em 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+body[data-theme="dark"] input, 
+body[data-theme="dark"] button {
+  border: 1px solid #444;
+}
+
+body[data-theme="sepia"] input, 
+body[data-theme="sepia"] button {
+  border: 1px solid #d4c4a8;
+}
+
+body[data-theme="blue"] input, 
+body[data-theme="blue"] button {
+  border: 1px solid #90cdf4;
+}
+
+input:focus, button:focus {
+  outline: none;
+  border-color: #007aff;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.3);
+}
+
+#delete-selected {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 1em 1.5em;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 5px rgba(239, 68, 68, 0.4);
+}
+
+body[data-theme="dark"] #delete-selected {
+  background: #ef4444;
+  color: #fff;
+}
+
+body[data-theme="sepia"] #delete-selected {
+  background: #c53030;
+  color: #fff;
+}
+
+body[data-theme="blue"] #delete-selected {
+  background: #2b6cb0;
+  color: #fff;
+}
+
+#delete-selected:hover {
+  background: #b91c1c;
+  box-shadow: 0 4px 12px rgba(185, 28, 28, 0.6);
+}
+
+.entry-checkbox {
+  margin-right: 0.5em;
+}
+
+body[data-theme="dark"] .entry-checkbox {
+  accent-color: #60a5fa;
+}
+
+body[data-theme="sepia"] .entry-checkbox {
+  accent-color: #9f7aea;
+}
+
+body[data-theme="blue"] .entry-checkbox {
+  accent-color: #3182ce;
+}
+
+#past-entries {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  align-items: center;
+  width: 100%;
+}
+
+.entry-header {
+  display: grid;
+  grid-template-columns: 40px 100px 1fr 1fr 1fr;
+  gap: 1em;
+  padding: 0.75em 1.2em;
+  font-weight: 600;
+  color: #4b5563;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 0.5em;
+}
+
+.entry-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 40px 100px 1fr auto;
+  gap: 1em;
+  background: #f3f4f6;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 1em;
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+  position: relative;
+  align-items: center;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.entry-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.expand-icon {
+  transition: transform 0.3s ease;
+}
+
+.entry-card.expanded .expand-icon {
+  transform: rotate(180deg);
+}
+
+.entry-content {
+  display: flex;
+  align-items: center;
+}
+
+.reaction-buttons {
+  display: flex;
+  gap: 0.5em;
+  margin-left: auto;
+}
+
+.reaction-btn {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0.2em;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.reaction-btn:hover {
+  transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.reaction-btn:active {
+  transform: scale(0.95);
+}
+
+/* Theme-specific styles for reaction buttons */
+body[data-theme="dark"] .reaction-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="sepia"] .reaction-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+body[data-theme="blue"] .reaction-btn:hover {
+  background: rgba(44, 82, 130, 0.1);
+}
+
+.entry-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.entry-checkbox input {
+  margin: 0;
+}
+
+.entry-date {
+  font-weight: 500;
+  color: #2563eb;
+}
+
+.entry-preview {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+
+.entry-preview-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0.25em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.expand-btn:hover {
+  transform: scale(1.1);
+}
+
+.entry-details {
+  grid-column: 1 / -1;
+  padding: 1em;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  margin-top: 0.5em;
+  display: none;
+  width: 100%;
+  box-sizing: border-box;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.entry-details[style*="display: block"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+body[data-theme="light"] .entry-details {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+body[data-theme="dark"] .entry-details {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body[data-theme="sepia"] .entry-details {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+body[data-theme="blue"] .entry-details {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.entry-detail-item {
+  display: flex;
+  gap: 1em;
+  padding: 0.75em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body[data-theme="dark"] .entry-detail-item {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.entry-label {
+  font-weight: 500;
+  min-width: 100px;
+}
+
+.entry-value {
+  flex: 1;
+}
+
+#wins-form {
+  width: 100%;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  margin-bottom: 2em;
+}
+
+.input-group input {
+  padding: 0.75em;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5em;
+  font-size: 1em;
+  transition: all 0.2s ease;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.input-group button {
+  padding: 0.75em;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.5em;
+  font-size: 1em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.input-group button:hover {
+  background: #2563eb;
+}
+
+/* Theme-specific styles */
+body[data-theme="dark"] .input-group input {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+body[data-theme="dark"] .input-group input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.1);
+}
+
+body[data-theme="dark"] .input-group button {
+  background: #3b82f6;
+}
+
+body[data-theme="dark"] .input-group button:hover {
+  background: #60a5fa;
+}
+
+body[data-theme="sepia"] .input-group input {
+  background: #f5e6d3;
+  border-color: #e6d5c3;
+  color: #5b4636;
+}
+
+body[data-theme="sepia"] .input-group input:focus {
+  border-color: #8b5a2b;
+  box-shadow: 0 0 0 2px rgba(139, 90, 43, 0.1);
+}
+
+body[data-theme="sepia"] .input-group button {
+  background: #8b5a2b;
+}
+
+body[data-theme="sepia"] .input-group button:hover {
+  background: #a49269;
+}
+
+body[data-theme="blue"] .input-group input {
+  background: #ffffff;
+  border-color: #bfdbfe;
+  color: #1e3a8a;
+}
+
+body[data-theme="blue"] .input-group input:focus {
+  border-color: #1e40af;
+  box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.1);
+}
+
+body[data-theme="blue"] .input-group button {
+  background: #1e40af;
+}
+
+body[data-theme="blue"] .input-group button:hover {
+  background: #2563eb;
+}
+
+.entry-count {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #6b7280;
+  padding: 0.25em 0.5em;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* Theme-specific styles for entry count */
+body[data-theme="dark"] .entry-count {
+  color: #d1d5db;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="sepia"] .entry-count {
+  color: #6b7280;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+body[data-theme="blue"] .entry-count {
+  color: #4a5568;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.entries-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1em;
+}
+
+.trash-icon {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 0.5em;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+}
+
+.trash-icon:hover {
+  background: rgba(239, 68, 68, 0.1);
+  transform: scale(1.1);
+}
+
+.trash-icon:active {
+  transform: scale(0.95);
+}
+
+/* Theme-specific styles for trash icon */
+body[data-theme="dark"] .trash-icon {
+  color: #f87171;
+}
+
+body[data-theme="dark"] .trash-icon:hover {
+  background: rgba(248, 113, 113, 0.2);
+}
+
+body[data-theme="sepia"] .trash-icon {
+  color: #dc2626;
+}
+
+body[data-theme="sepia"] .trash-icon:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+body[data-theme="blue"] .trash-icon {
+  color: #dc2626;
+}
+
+body[data-theme="blue"] .trash-icon:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.save-icon {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #4a5568;
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0.5em;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.save-icon:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #2d3748;
+}
+
+.save-icon:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Theme-specific styles for save icon */
+body[data-theme="dark"] .save-icon {
+  color: #e2e8f0;
+}
+
+body[data-theme="dark"] .save-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+body[data-theme="sepia"] .save-icon {
+  color: #5b4636;
+}
+
+body[data-theme="sepia"] .save-icon:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #433422;
+}
+
+body[data-theme="blue"] .save-icon {
+  color: #2c5282;
+}
+
+body[data-theme="blue"] .save-icon:hover {
+  background: rgba(44, 82, 130, 0.1);
+  color: #1a365d;
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+  margin-bottom: 2em;
+  padding: 1.5em;
+  background: #f8fafc;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.streak-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75em;
+  font-size: 1.5em;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.streak-counter i {
+  color: #f97316;
+  font-size: 1.2em;
+}
+
+.streak-label {
+  font-size: 0.8em;
+  color: #64748b;
+}
+
+.contribution-graph {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.5em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.calendar-container {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75em;
+}
+
+.calendar-header h3 {
+  font-size: 1em;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.calendar-nav {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.4em;
+  border-radius: 0.5em;
+  transition: all 0.2s ease;
+  font-size: 0.9em;
+}
+
+.calendar-nav:hover {
+  background: #f1f5f9;
+  color: #1e40af;
+}
+
+.calendar-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 0.75em;
+  color: #64748b;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.calendar-dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25em;
+}
+
+.calendar-date {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  color: #1e293b;
+  border-radius: 0.4em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  min-height: 32px;
+  position: relative;
+}
+
+.calendar-date:hover {
+  background: #f1f5f9;
+  transform: scale(1.1);
+}
+
+.calendar-date.today {
+  background: #1e40af;
+  color: white;
+  font-weight: 600;
+}
+
+.calendar-date.has-entry {
+  background: #f0f9ff;
+  color: #0369a1;
+  font-weight: 500;
+}
+
+.calendar-date.has-entry[data-level="1"] { background: #e0f2fe; }
+.calendar-date.has-entry[data-level="2"] { background: #bae6fd; }
+.calendar-date.has-entry[data-level="3"] { background: #7dd3fc; }
+.calendar-date.has-entry[data-level="4"] { background: #38bdf8; }
+
+.calendar-date.other-month {
+  color: #cbd5e1;
+  opacity: 0.5;
+}
+
+/* Theme-specific styles */
+body[data-theme="dark"] .stats-container {
+  background: #1e293b;
+}
+
+body[data-theme="dark"] .calendar-container {
+  background: #0f172a;
+}
+
+body[data-theme="dark"] .calendar-header h3 {
+  color: #e2e8f0;
+}
+
+body[data-theme="dark"] .calendar-date {
+  color: #e2e8f0;
+}
+
+body[data-theme="dark"] .calendar-date:hover {
+  background: #334155;
+}
+
+body[data-theme="dark"] .calendar-date.today {
+  background: #3b82f6;
+}
+
+body[data-theme="dark"] .calendar-date.has-entry[data-level="1"] { background: #0c4a6e; }
+body[data-theme="dark"] .calendar-date.has-entry[data-level="2"] { background: #0369a1; }
+body[data-theme="dark"] .calendar-date.has-entry[data-level="3"] { background: #0284c7; }
+body[data-theme="dark"] .calendar-date.has-entry[data-level="4"] { background: #0ea5e9; }
+
+body[data-theme="dark"] .calendar-date.other-month {
+  color: #475569;
+}
+
+body[data-theme="sepia"] .stats-container {
+  background: #faf0dc;
+}
+
+body[data-theme="sepia"] .calendar-container {
+  background: #f5e6d3;
+}
+
+body[data-theme="sepia"] .calendar-header h3 {
+  color: #5b4636;
+}
+
+body[data-theme="sepia"] .calendar-date {
+  color: #5b4636;
+}
+
+body[data-theme="sepia"] .calendar-date:hover {
+  background: #e6d5c3;
+}
+
+body[data-theme="sepia"] .calendar-date.today {
+  background: #8b5a2b;
+  color: #faf0dc;
+}
+
+body[data-theme="sepia"] .calendar-date.has-entry[data-level="1"] { background: #d4c4a8; }
+body[data-theme="sepia"] .calendar-date.has-entry[data-level="2"] { background: #c4b393; }
+body[data-theme="sepia"] .calendar-date.has-entry[data-level="3"] { background: #b4a27e; }
+body[data-theme="sepia"] .calendar-date.has-entry[data-level="4"] { background: #a49269; }
+
+body[data-theme="sepia"] .calendar-date.other-month {
+  color: #a89984;
+}
+
+body[data-theme="blue"] .stats-container {
+  background: #f0f9ff;
+}
+
+body[data-theme="blue"] .calendar-container {
+  background: #ffffff;
+}
+
+body[data-theme="blue"] .calendar-header h3 {
+  color: #1e40af;
+}
+
+body[data-theme="blue"] .calendar-date {
+  color: #1e3a8a;
+}
+
+body[data-theme="blue"] .calendar-date:hover {
+  background: #dbeafe;
+}
+
+body[data-theme="blue"] .calendar-date.today {
+  background: #1e40af;
+  color: #ffffff;
+}
+
+body[data-theme="blue"] .calendar-date.has-entry[data-level="1"] { background: #dbeafe; }
+body[data-theme="blue"] .calendar-date.has-entry[data-level="2"] { background: #bfdbfe; }
+body[data-theme="blue"] .calendar-date.has-entry[data-level="3"] { background: #93c5fd; }
+body[data-theme="blue"] .calendar-date.has-entry[data-level="4"] { background: #60a5fa; }
+
+body[data-theme="blue"] .calendar-date.other-month {
+  color: #93c5fd;
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  .stats-container {
+    padding: 1em;
+  }
+
+  .calendar-container {
+    padding: 0.75em;
+    max-width: 280px;
+  }
+
+  .calendar-date {
+    min-width: 28px;
+    min-height: 28px;
+    font-size: 0.75em;
+  }
+
+  .calendar-days {
+    font-size: 0.7em;
+  }
+
+  .calendar-header h3 {
+    font-size: 0.9em;
   }
 }
 
-document.getElementById('delete-selected').addEventListener('click', () => {
-  const checkboxes = document.querySelectorAll('.entry-checkbox input[type="checkbox"]:checked');
-  if (checkboxes.length === 0) return;
-  if (!confirm('Delete selected entries?')) return;
-  let saved = JSON.parse(localStorage.getItem('wins') || '[]');
-  // Get indices to delete, sort descending so we can safely splice
-  const indices = Array.from(checkboxes).map(cb => Number(cb.dataset.idx)).sort((a, b) => b - a);
-  for (const idx of indices) {
-    saved.splice(idx, 1);
-  }
-  localStorage.setItem('wins', JSON.stringify(saved));
-  renderWins();
-});
-
-renderWins();
-
-// Calendar functionality
-let currentDate = new Date();
-let currentMonth = currentDate.getMonth();
-let currentYear = currentDate.getFullYear();
-
-function updateCalendar() {
-  const firstDay = new Date(currentYear, currentMonth, 1);
-  const lastDay = new Date(currentYear, currentMonth + 1, 0);
-  const startingDay = firstDay.getDay();
-  const monthLength = lastDay.getDate();
-  
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                     'July', 'August', 'September', 'October', 'November', 'December'];
-  
-  document.querySelector('.calendar-header h3').textContent = 
-    `${monthNames[currentMonth]} ${currentYear}`;
-  
-  const datesGrid = document.querySelector('.calendar-dates');
-  datesGrid.innerHTML = '';
-  
-  // Previous month's days
-  const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
-  for (let i = startingDay - 1; i >= 0; i--) {
-    const dateElement = document.createElement('div');
-    dateElement.className = 'calendar-date other-month';
-    dateElement.textContent = prevMonthLastDay - i;
-    datesGrid.appendChild(dateElement);
-  }
-  
-  // Current month's days
-  for (let i = 1; i <= monthLength; i++) {
-    const dateElement = document.createElement('div');
-    dateElement.className = 'calendar-date';
-    dateElement.textContent = i;
-    
-    // Check if this date has an entry
-    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-    const entries = localStorage.getItem(dateStr);
-    
-    if (entries) {
-      dateElement.classList.add('has-entry');
-      const entryCount = JSON.parse(entries).length;
-      if (entryCount >= 3) {
-        dateElement.setAttribute('data-level', '4');
-      } else if (entryCount === 2) {
-        dateElement.setAttribute('data-level', '3');
-      } else {
-        dateElement.setAttribute('data-level', '2');
-      }
-    }
-    
-    // Highlight today
-    if (i === currentDate.getDate() && 
-        currentMonth === currentDate.getMonth() && 
-        currentYear === currentDate.getFullYear()) {
-      dateElement.classList.add('today');
-    }
-    
-    // Add tooltip with entry details
-    if (entries) {
-      const entryCount = JSON.parse(entries).length;
-      dateElement.setAttribute('title', `${dateStr}: ${entryCount} wins completed`);
-    }
-    
-    dateElement.addEventListener('click', () => {
-      // TODO: Show entries for this date
-    });
-    
-    datesGrid.appendChild(dateElement);
-  }
-  
-  // Next month's days
-  const totalDays = 42; // 6 rows of 7 days
-  const remainingDays = totalDays - (startingDay + monthLength);
-  for (let i = 1; i <= remainingDays; i++) {
-    const dateElement = document.createElement('div');
-    dateElement.className = 'calendar-date other-month';
-    dateElement.textContent = i;
-    datesGrid.appendChild(dateElement);
-  }
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
 }
 
-function updateStreakCounter() {
-  let streak = 0;
-  let currentStreakDate = new Date();
-  currentStreakDate.setHours(0, 0, 0, 0);
-  
-  while (true) {
-    const dateStr = currentStreakDate.toISOString().split('T')[0];
-    if (localStorage.getItem(dateStr)) {
-      streak++;
-      currentStreakDate.setDate(currentStreakDate.getDate() - 1);
-    } else {
-      break;
-    }
-  }
-  
-  document.querySelector('.streak-counter').innerHTML = `
-    <i class="fas fa-fire"></i>
-    <span>${streak}</span>
-    <span class="streak-label">day streak</span>
-  `;
+.graph-header h3 {
+  font-size: 1em;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize theme
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.body.setAttribute('data-theme', savedTheme);
-    document.getElementById('theme-selector').value = savedTheme;
+.graph-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.75em;
+  color: #64748b;
+}
 
-    // Initialize calendar
-    updateCalendar();
-    updateStreakCounter();
+.legend-squares {
+  display: flex;
+  gap: 2px;
+}
 
-    // Add event listeners
-    document.getElementById('wins-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const date = new Date().toISOString().split('T')[0];
-        const physicalWin = document.getElementById('physical').value;
-        const mentalWin = document.getElementById('mental').value;
-        const spiritualWin = document.getElementById('spiritual').value;
+.legend-square {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
 
-        const wins = {
-            date,
-            physical: physicalWin,
-            mental: mentalWin,
-            spiritual: spiritualWin
-        };
+.legend-square:nth-child(1) { background: #ebedf0; }
+.legend-square:nth-child(2) { background: #9be9a8; }
+.legend-square:nth-child(3) { background: #40c463; }
+.legend-square:nth-child(4) { background: #30a14e; }
 
-        let savedWins = JSON.parse(localStorage.getItem('wins') || '[]');
-        savedWins.push(wins);
-        localStorage.setItem('wins', JSON.stringify(savedWins));
+.graph-container {
+  display: flex;
+  gap: 0.5em;
+}
 
-        document.getElementById('wins-form').reset();
-        renderWins();
-        updateCalendar();
-        updateStreakCounter();
-    });
+.graph-months {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  font-size: 0.7em;
+  color: #64748b;
+  padding-top: 1.5em;
+}
 
-    document.getElementById('theme-selector').addEventListener('change', (e) => {
-        const theme = e.target.value;
-        document.body.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-    });
+.graph-grid {
+  display: grid;
+  grid-template-columns: repeat(53, 1fr);
+  gap: 2px;
+  padding: 0.5em;
+}
 
-    document.querySelector('.prev-month').addEventListener('click', () => {
-        currentMonth--;
-        if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
-        }
-        updateCalendar();
-    });
+.contribution-square {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: #ebedf0;
+  transition: transform 0.2s ease;
+}
 
-    document.querySelector('.next-month').addEventListener('click', () => {
-        currentMonth++;
-        if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
-        }
-        updateCalendar();
-    });
+.contribution-square:hover {
+  transform: scale(1.5);
+  z-index: 1;
+}
 
-    document.getElementById('delete-selected').addEventListener('click', () => {
-        const checkboxes = document.querySelectorAll('.entry-checkbox input[type="checkbox"]:checked');
-        if (checkboxes.length === 0) {
-            alert('Please select entries to delete');
-            return;
-        }
+.contribution-square[data-level="1"] { background: #9be9a8; }
+.contribution-square[data-level="2"] { background: #40c463; }
+.contribution-square[data-level="3"] { background: #30a14e; }
+.contribution-square[data-level="4"] { background: #216e39; }
 
-        if (confirm(`Are you sure you want to delete ${checkboxes.length} entries?`)) {
-            let savedWins = JSON.parse(localStorage.getItem('wins') || '[]');
-            checkboxes.forEach(checkbox => {
-                const date = checkbox.closest('.entry').dataset.date;
-                savedWins = savedWins.filter(win => win.date !== date);
-            });
-            localStorage.setItem('wins', JSON.stringify(savedWins));
-            renderWins();
-            updateCalendar();
-            updateStreakCounter();
-        }
-    });
+/* Theme-specific styles */
+body[data-theme="dark"] .contribution-graph {
+  background: #0f172a;
+}
 
-    renderWins();
-});
+body[data-theme="dark"] .graph-header h3 {
+  color: #e2e8f0;
+}
+
+body[data-theme="dark"] .graph-legend {
+  color: #94a3b8;
+}
+
+body[data-theme="dark"] .graph-months {
+  color: #94a3b8;
+}
+
+body[data-theme="dark"] .contribution-square {
+  background: #1e293b;
+}
+
+body[data-theme="dark"] .contribution-square[data-level="1"] { background: #0ea5e9; }
+body[data-theme="dark"] .contribution-square[data-level="2"] { background: #0284c7; }
+body[data-theme="dark"] .contribution-square[data-level="3"] { background: #0369a1; }
+body[data-theme="dark"] .contribution-square[data-level="4"] { background: #075985; }
+
+body[data-theme="sepia"] .contribution-graph {
+  background: #f5e6d3;
+}
+
+body[data-theme="sepia"] .graph-header h3 {
+  color: #5b4636;
+}
+
+body[data-theme="sepia"] .graph-legend {
+  color: #7c6a5a;
+}
+
+body[data-theme="sepia"] .graph-months {
+  color: #7c6a5a;
+}
+
+body[data-theme="sepia"] .contribution-square {
+  background: #e6d5c3;
+}
+
+body[data-theme="sepia"] .contribution-square[data-level="1"] { background: #d4c4a8; }
+body[data-theme="sepia"] .contribution-square[data-level="2"] { background: #c4b393; }
+body[data-theme="sepia"] .contribution-square[data-level="3"] { background: #b4a27e; }
+body[data-theme="sepia"] .contribution-square[data-level="4"] { background: #a49269; }
+
+body[data-theme="blue"] .contribution-graph {
+  background: #ffffff;
+}
+
+body[data-theme="blue"] .graph-header h3 {
+  color: #1e40af;
+}
+
+body[data-theme="blue"] .graph-legend {
+  color: #3b82f6;
+}
+
+body[data-theme="blue"] .graph-months {
+  color: #3b82f6;
+}
+
+body[data-theme="blue"] .contribution-square {
+  background: #dbeafe;
+}
+
+body[data-theme="blue"] .contribution-square[data-level="1"] { background: #93c5fd; }
+body[data-theme="blue"] .contribution-square[data-level="2"] { background: #60a5fa; }
+body[data-theme="blue"] .contribution-square[data-level="3"] { background: #3b82f6; }
+body[data-theme="blue"] .contribution-square[data-level="4"] { background: #2563eb; }
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+  .contribution-graph {
+    padding: 1em;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .graph-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5em;
+  }
+
+  .graph-grid {
+    grid-template-columns: repeat(53, 8px);
+  }
+
+  .contribution-square {
+    width: 8px;
+    height: 8px;
+  }
+}
